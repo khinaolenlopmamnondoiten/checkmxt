@@ -1,27 +1,74 @@
-function ban7Days(account) {
-    const bannedUntil = Date.now() + 7 * 24 * 60 * 60 * 1000;
+total=Math.min(total,1000);
 
-    account.status = "BANNED";
-    account.bannedUntil = bannedUntil;
+  current=0;
+  running=true;
 
-    return account;
-}
+  document.getElementById("counter")
+    .textContent=
+    "0 / "+total;
 
-function checkBan(account) {
-    if (
-        account.status === "BANNED" &&
-        Date.now() < account.bannedUntil
-    ) {
-        return {
-            banned: true,
-            until: new Date(account.bannedUntil)
-        };
+  document.getElementById("progress")
+    .style.width="0%";
+
+  writeLog(
+    "Bắt đầu Login Test: "+total+" lần.",
+    "warn"
+  );
+
+  timer=setInterval(()=>{
+
+    current++;
+
+    const percent=
+      current/total*100;
+
+    document.getElementById("progress")
+      .style.width=
+      percent+"%";
+
+    document.getElementById("counter")
+      .textContent=
+      current+" / "+total;
+
+    writeLog(
+      "Login Test "+current+"/"+total,
+      "ok"
+    );
+
+    if(current>=total){
+
+      stopTest();
+
+      writeLog(
+        "Login Test hoàn thành.",
+        "ok"
+      );
     }
 
-    account.status = "ACTIVE";
-    account.bannedUntil = null;
-
-    return {
-        banned: false
-    };
+  },300);
 }
+
+
+function stopTest(){
+
+  if(timer){
+
+    clearInterval(timer);
+    timer=null;
+  }
+
+  if(running){
+
+    writeLog(
+      "Đã dừng Login Test.",
+      "warn"
+    );
+  }
+
+  running=false;
+}
+
+</script>
+
+</body>
+</html>
