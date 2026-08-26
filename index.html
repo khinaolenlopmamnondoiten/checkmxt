@@ -1,193 +1,27 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>CheckMXT Admin</title>
+function ban7Days(account) {
+    const bannedUntil = Date.now() + 7 * 24 * 60 * 60 * 1000;
 
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:Arial,sans-serif;
+    account.status = "BANNED";
+    account.bannedUntil = bannedUntil;
+
+    return account;
 }
 
-body{
-    background:#080b12;
-    color:#fff;
-    min-height:100vh;
-}
-
-.header{
-    height:70px;
-    background:#10151f;
-    border-bottom:1px solid #242b38;
-    display:flex;
-    align-items:center;
-    padding:0 25px;
-}
-
-.logo{
-    font-size:24px;
-    font-weight:bold;
-}
-
-.logo span{
-    color:#00e5ff;
-}
-
-.container{
-    max-width:1100px;
-    margin:30px auto;
-    padding:0 20px;
-}
-
-.card{
-    background:#10151f;
-    border:1px solid #242b38;
-    border-radius:14px;
-    padding:22px;
-    margin-bottom:20px;
-}
-
-.title{
-    font-size:19px;
-    font-weight:bold;
-    margin-bottom:18px;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-
-label{
-    display:block;
-    color:#aeb7c5;
-    font-size:14px;
-    margin-bottom:8px;
-}
-
-input,select{
-    width:100%;
-    background:#080b12;
-    color:white;
-    border:1px solid #303847;
-    border-radius:9px;
-    padding:13px;
-    outline:none;
-}
-
-input:focus,select:focus{
-    border-color:#00e5ff;
-}
-
-.buttons{
-    display:flex;
-    gap:10px;
-    margin-top:18px;
-    flex-wrap:wrap;
-}
-
-button{
-    border:0;
-    border-radius:9px;
-    padding:12px 18px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.ban{
-    background:#ff3b55;
-    color:white;
-}
-
-.login{
-    background:#00bcd4;
-    color:#001014;
-}
-
-.stop{
-    background:#333b49;
-    color:white;
-}
-
-.status{
-    padding:14px;
-    background:#080b12;
-    border-radius:9px;
-    border:1px solid #242b38;
-    margin-top:15px;
-}
-
-.status b{
-    color:#00e5ff;
-}
-
-.log{
-    height:250px;
-    overflow-y:auto;
-    background:#05070b;
-    border:1px solid #242b38;
-    border-radius:9px;
-    padding:15px;
-    font-family:monospace;
-    font-size:13px;
-}
-
-.line{
-    margin-bottom:8px;
-}
-
-.ok{
-    color:#45e67a;
-}
-
-.warn{
-    color:#ffc857;
-}
-
-.err{
-    color:#ff5368;
-}
-
-@media(max-width:700px){
-    .grid{
-        grid-template-columns:1fr;
+function checkBan(account) {
+    if (
+        account.status === "BANNED" &&
+        Date.now() < account.bannedUntil
+    ) {
+        return {
+            banned: true,
+            until: new Date(account.bannedUntil)
+        };
     }
+
+    account.status = "ACTIVE";
+    account.bannedUntil = null;
+
+    return {
+        banned: false
+    };
 }
-</style>
-</head>
-
-<body>
-
-<header class="header">
-    <div class="logo">
-        Check<span>MXT</span> Admin
-    </div>
-</header>
-
-<main class="container">
-
-    <div class="card">
-        <div class="title">Quản lý tài khoản</div>
-
-        <div class="grid">
-
-            <div>
-                <label>UID / Account ID</label>
-                <input id="uid" placeholder="Nhập UID..." autocomplete="off">
-            </div>
-
-            <div>
-                <label>Số lần Login Test</label>
-                <input id="times" type="number" min="1" max="1000" value="10">
-            </div>
-
-        </div>
-
-        <div class="buttons">
-            <button class="ban" onclick="banAccount()">
-                Ban 7
