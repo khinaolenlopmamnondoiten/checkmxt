@@ -1,71 +1,579 @@
-total=Math.min(total,1000);
+Được 😎 Đây là bản giao diện mô phỏng gần giống ảnh bạn gửi: nền tối, logo CHECKMXT, menu accordion, ảnh minh họa, nút tím/đỏ, Token + Admin Key và Ban 7 ngày trong hệ thống test.
 
-  current=0;
-  running=true;
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CHECKMXT</title>
 
-  document.getElementById("counter")
-    .textContent=
-    "0 / "+total;
+<style>
+*{box-sizing:border-box}
 
-  document.getElementById("progress")
-    .style.width="0%";
+body{
+ margin:0;
+ background:
+ radial-gradient(circle at 50% 10%,#211735 0,#0d1018 38%,#080b10 100%);
+ color:#f4f2f8;
+ font-family:Arial,Helvetica,sans-serif;
+}
 
-  writeLog(
-    "Bắt đầu Login Test: "+total+" lần.",
-    "warn"
-  );
+.header{
+ height:82px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 28px;
+ border-bottom:1px solid #29263a;
+ background:rgba(8,9,17,.9);
+ position:sticky;
+ top:0;
+ z-index:5;
+}
 
-  timer=setInterval(()=>{
+.logo{
+ font-size:34px;
+ font-weight:900;
+ letter-spacing:-2px;
+}
+.logo span{color:#8164ff}
 
-    current++;
+.menu{
+ width:58px;
+ height:58px;
+ border:0;
+ border-radius:20px;
+ background:#211f2b;
+ color:white;
+ font-size:30px;
+}
 
-    const percent=
-      current/total*100;
+.container{
+ max-width:720px;
+ margin:auto;
+ padding:22px 18px 60px;
+}
 
-    document.getElementById("progress")
-      .style.width=
-      percent+"%";
+.card{
+ background:rgba(27,27,40,.78);
+ border:1px solid #373548;
+ border-radius:24px;
+ padding:22px;
+ box-shadow:0 15px 45px rgba(0,0,0,.25);
+}
 
-    document.getElementById("counter")
-      .textContent=
-      current+" / "+total;
+h1{
+ margin:0 0 20px;
+ font-size:30px;
+}
 
-    writeLog(
-      "Login Test "+current+"/"+total,
-      "ok"
-    );
+.auth{
+ padding:18px;
+ margin-bottom:20px;
+ border-radius:18px;
+ background:#151521;
+ border:1px solid #343244;
+}
 
-    if(current>=total){
+label{
+ display:block;
+ margin:12px 0 7px;
+ color:#aaa6b7;
+}
 
-      stopTest();
+input{
+ width:100%;
+ padding:15px;
+ border-radius:13px;
+ border:1px solid #39364a;
+ background:#0c0d14;
+ color:white;
+ outline:none;
+ font-size:15px;
+}
 
-      writeLog(
-        "Login Test hoàn thành.",
-        "ok"
-      );
-    }
+input:focus{
+ border-color:#8065ff;
+}
 
-  },300);
+.tool{
+ margin-top:14px;
+ border:1px solid #39374a;
+ border-radius:20px;
+ overflow:hidden;
+ background:rgba(20,21,31,.75);
+}
+
+.tool-title{
+ width:100%;
+ padding:21px 25px;
+ background:transparent;
+ color:#f4f2f8;
+ border:0;
+ text-align:left;
+ font-size:20px;
+ cursor:pointer;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+}
+
+.arrow{
+ font-size:25px;
+ transition:.2s;
+}
+
+.tool.open .arrow{
+ transform:rotate(180deg);
+}
+
+.content{
+ display:none;
+ padding:0 27px 25px;
+}
+
+.tool.open .content{
+ display:block;
+}
+
+.preview{
+ width:100%;
+ height:180px;
+ border-radius:15px;
+ margin:8px 0 20px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:
+ linear-gradient(135deg,#171329,#2c173b,#10131c);
+ border:1px solid #302b42;
+ color:#80798f;
+ font-size:42px;
+}
+
+.desc{
+ color:#aaa8b4;
+ line-height:1.6;
+ margin-bottom:17px;
+}
+
+button.action{
+ width:100%;
+ padding:15px;
+ border-radius:13px;
+ border:1px solid #755cff;
+ background:#28234a;
+ color:#b9aaff;
+ font-size:17px;
+ font-weight:bold;
+ cursor:pointer;
+ margin-top:10px;
+}
+
+button.action:hover{
+ filter:brightness(1.2);
+}
+
+button.danger{
+ border-color:#e04450;
+ background:#48252c;
+ color:#ffaaa9;
+}
+
+.status{
+ margin-top:15px;
+ padding:14px;
+ border-radius:12px;
+ background:#0a0c12;
+ border:1px solid #292c37;
+ color:#b9b7c2;
+ line-height:1.7;
+}
+
+.green{color:#55e58a}.red{color:#ff666f}
+.yellow{color:#ffd15c}
+
+.log{
+ max-height:150px;
+ overflow:auto;
+ font-family:monospace;
+ font-size:13px;
+ line-height:1.7;
+}
+
+@media(max-width:500px){
+ .header{padding:0 20px}
+ .logo{font-size:29px}
+ .container{padding:18px 12px}
+ .card{padding:15px}
+ .tool-title{font-size:18px;padding:19px}
+ .content{padding:0 20px 22px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+ <div class="logo">CHECK<span>MXT</span></div>
+ <button class="menu">☰</button>
+</header>
+
+<main class="container">
+
+<div class="card">
+
+<h1>Công cụ</h1>
+
+<div class="auth">
+ <b>🔐 Quyền quản trị</b>
+
+ <label>Token</label>
+ <input id="token" type="password" placeholder="Nhập token">
+
+ <label>Admin Key</label>
+ <input id="adminKey" type="password" placeholder="Nhập admin key">
+
+ <label>UID</label>
+ <input id="uid" placeholder="Nhập UID">
+
+ <div id="authStatus" class="status">
+ Chưa xác thực.
+ </div>
+</div>
+
+
+<!-- LOG TOKEN -->
+<div class="tool">
+ <button class="tool-title" onclick="toggle(this)">
+  Log acc qua token (0)
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div class="preview">🔑</div>
+
+  <div class="desc">
+   Mô phỏng đăng nhập bằng access token trong hệ thống test.
+  </div>
+
+  <button class="action" onclick="testAction('Log acc qua token')">
+   Xác nhận Log acc qua token
+  </button>
+ </div>
+</div>
+
+
+<!-- GỠ LIÊN KẾT -->
+<div class="tool">
+ <button class="tool-title" onclick="toggle(this)">
+  Gỡ liên kết (0)
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div class="preview">🔗</div>
+
+  <div class="desc">
+   Mô phỏng thao tác gỡ liên kết trong hệ thống test.
+  </div>
+
+  <button class="action danger" onclick="testAction('Gỡ liên kết')">
+   Gỡ liên kết
+  </button>
+ </div>
+</div>
+
+
+<!-- MAIL -->
+<div class="tool">
+ <button class="tool-title" onclick="toggle(this)">
+  Gắn/Gỡ Mail Xác Thực (0)
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div class="preview">📧</div>
+
+  <div class="desc">
+   Mô phỏng quản lý mail xác thực của tài khoản test.
+  </div>
+
+  <input id="mail" type="email" placeholder="Email">
+
+  <button class="action" onclick="testAction('Gắn Mail xác thực')">
+   Gắn Mail xác thực
+  </button>
+
+  <button class="action danger" onclick="testAction('Gỡ Mail xác thực')">
+   Gỡ Mail xác thực
+  </button>
+ </div>
+</div>
+
+
+<!-- OTP -->
+<div class="tool">
+ <button class="tool-title" onclick="toggle(this)">
+  Chặn mã xác thực (0)
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div class="preview">🛡️</div>
+
+  <div class="desc">
+   Mô phỏng chức năng chặn mã xác thực trong hệ thống test.
+  </div>
+
+  <input placeholder="Email test">
+
+  <button class="action danger" onclick="testAction('Chặn mã xác thực')">
+   Chặn
+  </button>
+ </div>
+</div>
+
+
+<!-- NHẬN OTP -->
+<div class="tool"><button class="tool-title" onclick="toggle(this)">
+  Nhận mã OTP
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div class="preview">🔢</div>
+
+  <div class="desc">
+   Khu vực mô phỏng OTP — không lấy OTP thật.
+  </div>
+
+  <input placeholder="OTP test">
+
+  <button class="action" onclick="testAction('OTP Test')">
+   Xác nhận OTP
+  </button>
+ </div>
+</div>
+
+
+<!-- LOGIN TEST -->
+<div class="tool">
+ <button class="tool-title" onclick="toggle(this)">
+  Spam login (0)
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div class="preview">🔄</div>
+
+  <div class="desc">
+   Chỉ chạy mô phỏng số lần login trong hệ thống test.
+  </div>
+
+  <input id="loginCount" type="number" min="1" max="100"
+         value="10" placeholder="Số lần">
+
+  <button class="action" onclick="loginTest()">
+   Xác nhận Login Test
+  </button>
+
+  <div id="loginStatus" class="status">
+   Chưa chạy.
+  </div>
+ </div>
+</div>
+
+
+<!-- BAN -->
+<div class="tool">
+ <button class="tool-title" onclick="toggle(this)">
+  Ban 7 ngày (0)
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div class="preview">🔨</div>
+
+  <div class="desc">
+   Ban UID trong <b>hệ thống test của website</b> trong 7 ngày.
+  </div>
+
+  <button class="action danger" onclick="banTest()">
+   Ban
+  </button>
+
+  <div id="banStatus" class="status">
+   Chưa ban UID nào.
+  </div>
+ </div>
+</div>
+
+
+<!-- LOG -->
+<div class="tool">
+ <button class="tool-title" onclick="toggle(this)">
+  System Log
+  <span class="arrow">⌄</span>
+ </button>
+
+ <div class="content">
+  <div id="log" class="status log">
+   [SYSTEM] Tool đã khởi động.
+  </div>
+ </div>
+</div>
+
+</div>
+</main>
+
+
+<script>
+
+const ADMIN_KEY="MXT-ADMIN-7F4K-9Q2P-8X6N";
+
+function toggle(btn){
+
+ const tool=btn.parentElement;
+
+ document.querySelectorAll(".tool").forEach(x=>{
+   if(x!==tool) x.classList.remove("open");
+ });
+
+ tool.classList.toggle("open");
 }
 
 
-function stopTest(){
+function log(text){
 
-  if(timer){
+ const box=document.getElementById("log");
 
-    clearInterval(timer);
-    timer=null;
-  }
+ if(!box)return;
 
-  if(running){
+ box.innerHTML+=
+   "<br>["+new Date().toLocaleTimeString("vi-VN")+"] "
+   +text;
 
-    writeLog(
-      "Đã dừng Login Test.",
-      "warn"
-    );
-  }
+ box.scrollTop=box.scrollHeight;
+}
 
-  running=false;
+
+function auth(){
+
+ const token=document.getElementById("token").value.trim();
+ const key=document.getElementById("adminKey").value;
+
+ if(!token){
+   document.getElementById("authStatus").innerHTML=
+    "<span class='red'>❌ Thiếu Token</span>";
+   return false;
+ }
+
+ if(key!==ADMIN_KEY){
+   document.getElementById("authStatus").innerHTML=
+    "<span class='red'>❌ Admin Key không đúng</span>";
+   return false;
+ }
+
+ document.getElementById("authStatus").innerHTML=
+   "<span class='green'>🟢 Xác thực thành công</span>";
+
+ return true;
+}
+
+
+function getUID(){
+
+ return document.getElementById("uid").value.trim();
+}
+
+
+function testAction(name){
+
+ if(!auth())return;
+
+ const uid=getUID();
+
+ if(!uid){
+   alert("Nhập UID trước.");
+   return;
+ }
+
+ log("TEST: "+name+" → UID "+uid);alert(name+" đã chạy trong hệ thống test.");
+}
+
+
+function loginTest(){
+
+ if(!auth())return;
+
+ const uid=getUID();
+
+ if(!uid){
+   alert("Nhập UID trước.");
+   return;
+ }
+
+ let count=
+   parseInt(document.getElementById("loginCount").value)||1;
+
+ count=Math.min(count,100);
+
+ let i=0;
+
+ const status=document.getElementById("loginStatus");
+
+ const timer=setInterval(()=>{
+
+   i++;
+
+   status.innerHTML=
+    "🔄 Login Test: <b>"+i+
+    "</b> / "+count;
+
+   if(i>=count){
+
+     clearInterval(timer);
+
+     status.innerHTML=
+      "<span class='green'>🟢 Hoàn thành "+count+
+      " lần test.</span>";
+
+     log("Login Test hoàn thành: "+count+" lần.");
+   }
+
+ },100);
+
+}
+
+
+function banTest(){
+
+ if(!auth())return;
+
+ const uid=getUID();
+
+ if(!uid){
+   alert("Nhập UID trước.");
+   return;
+ }
+
+ const until=
+   Date.now()+7*24*60*60*1000;
+
+ localStorage.setItem(
+   "ban_"+uid,
+   until
+ );
+
+ document.getElementById("banStatus").innerHTML=
+   "<span class='red'>🔴 BANNED 7 NGÀY</span><br>"+
+   "UID: "+uid+"<br>"+
+   "Hết hạn: "+
+   new Date(until).toLocaleString("vi-VN");
+
+ log("UID "+uid+" → BANNED 7 NGÀY (TEST)");
+
 }
 
 </script>
